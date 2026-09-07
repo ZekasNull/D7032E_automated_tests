@@ -13,10 +13,16 @@ public class PaymentTest {
         return new PaymentImpl(new CalendarImpl());
     }
 
+    private PaymentImpl getPaymentImplCustomDate(int year, int month, int day) throws IOException
+    {
+        return new PaymentImpl(new CalendarImpl(year, month, day));
+    }
+
     int fullGrant = TestNumConstants.StudentSupportType.FULL_TIME_LOAN.getAmountPerMonth() +
             TestNumConstants.StudentSupportType.FULL_TIME_SUBSIDIARY.getAmountPerMonth();
     int halfGrant = TestNumConstants.StudentSupportType.PART_TIME_LOAN.getAmountPerMonth() +
             TestNumConstants.StudentSupportType.PART_TIME_SUBSIDIARY.getAmountPerMonth();
+
 
 
     // ---------------------------------------------------------------
