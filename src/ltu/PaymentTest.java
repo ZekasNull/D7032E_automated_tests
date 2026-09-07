@@ -97,7 +97,32 @@ public class PaymentTest {
     }
 
     /**
-     * Evaluates 102
+     * Evaluates 101 (half pace)
+     * @throws IOException
+     */
+    @Test
+    public void halfTime_noIncome_fullCompletion_noGrantBefore20() throws IOException
+    {
+        PaymentImpl payimpl = this.getPaymentImplCustomDate(2016, 1, 1);
+        int halfTimeGrant =
+                TestNumConstants.StudentSupportType.PART_TIME_LOAN.getAmountPerMonth() +
+                TestNumConstants.StudentSupportType.PART_TIME_SUBSIDIARY.getAmountPerMonth();
+
+        Student tooYoung = new StudentBuilder()
+                .studyRate(TestNumConstants.StudyRate.HALF_TIME)
+                .income(TestNumConstants.IncomeLevel.NO_INCOME)
+                .birthDate(1997, 1, 1).build();
+        Student ok = new StudentBuilder()
+                .studyRate(TestNumConstants.StudyRate.HALF_TIME)
+                .income(TestNumConstants.IncomeLevel.NO_INCOME)
+                .birthDate(1996, 1, 1).build();
+
+        assertEquals(0, payimpl.getMonthlyAmount(tooYoung.ssn, tooYoung.income, tooYoung.studyRate, tooYoung.completionRatio));
+        assertEquals(halfTimeGrant, payimpl.getMonthlyAmount(ok.ssn, ok.income, ok.studyRate, ok.completionRatio));
+    }
+
+    /**
+     * Evaluates 102 (full time)
      * Until 56 = <57
      */
     @Test
@@ -123,6 +148,34 @@ public class PaymentTest {
                 payimpl.getMonthlyAmount(ok_border.ssn, ok_border.income, ok_border.studyRate, ok_border.completionRatio));
         assertEquals(0,
                 payimpl.getMonthlyAmount(notOk_over.ssn, notOk_over.income, notOk_over.studyRate, notOk_over.completionRatio));
+    }
+
+    /**
+     * Evaluates 102
+     * Half-time study rate at the age-57 boundary
+     */
+    @Test
+    public void halfTime_noIncome_fullCompletion_noGrantAfter57() throws IOException
+    {
+        PaymentImpl payimpl = this.getPaymentImplCustomDate(2016, 1, 1);
+        int halfTimeSubsidyOnly = TestNumConstants.StudentSupportType.PART_TIME_SUBSIDIARY.getAmountPerMonth();
+
+        Student ok_under = new StudentBuilder()
+                .studyRate(TestNumConstants.StudyRate.HALF_TIME)
+                .income(TestNumConstants.IncomeLevel.NO_INCOME)
+                .birthDate(1961, 1, 1).build(); //55 years old
+        Student ok_border = new StudentBuilder()
+                .studyRate(TestNumConstants.StudyRate.HALF_TIME)
+                .income(TestNumConstants.IncomeLevel.NO_INCOME)
+                .birthDate(1960, 1, 1).build(); //56 years old
+        Student notOk_over = new StudentBuilder()
+                .studyRate(TestNumConstants.StudyRate.HALF_TIME)
+                .income(TestNumConstants.IncomeLevel.NO_INCOME)
+                .birthDate(1959, 1, 1).build(); //57 years old
+
+        assertEquals(halfTimeSubsidyOnly, payimpl.getMonthlyAmount(ok_under.ssn, ok_under.income, ok_under.studyRate, ok_under.completionRatio));
+        assertEquals(halfTimeSubsidyOnly, payimpl.getMonthlyAmount(ok_border.ssn, ok_border.income, ok_border.studyRate, ok_border.completionRatio));
+        assertEquals(0, payimpl.getMonthlyAmount(notOk_over.ssn, notOk_over.income, notOk_over.studyRate, notOk_over.completionRatio));
     }
 
     /**
@@ -155,6 +208,53 @@ public class PaymentTest {
                 payimpl.getMonthlyAmount(notOk_border.ssn, notOk_border.income, notOk_border.studyRate, notOk_border.completionRatio));
         assertEquals(onlySubsidy,
                 payimpl.getMonthlyAmount(notOk_over.ssn, notOk_over.income, notOk_over.studyRate, notOk_over.completionRatio));
+    }
+
+    /**
+     * Evaluates 103
+     * Half-time study rate at the age-47 boundary
+     */
+    @Test
+    public void halfTime_noIncome_fullCompletion_noLoanAfter47() throws IOException
+    {
+        PaymentImpl payimpl = this.getPaymentImplCustomDate(2016, 1, 1);
+        int halfTimeGrant =
+                TestNumConstants.StudentSupportType.PART_TIME_LOAN.getAmountPerMonth() +
+                TestNumConstants.StudentSupportType.PART_TIME_SUBSIDIARY.getAmountPerMonth();
+        int halfTimeSubsidyOnly = TestNumConstants.StudentSupportType.PART_TIME_SUBSIDIARY.getAmountPerMonth();
+
+        Student ok_under = new StudentBuilder()
+                .studyRate(TestNumConstants.StudyRate.HALF_TIME)
+                .income(TestNumConstants.IncomeLevel.NO_INCOME)
+                .birthDate(1970, 1, 1).build(); //46 years old
+        Student notOk_border = new StudentBuilder()
+                .studyRate(TestNumConstants.StudyRate.HALF_TIME)
+                .income(TestNumConstants.IncomeLevel.NO_INCOME)
+                .birthDate(1969, 1, 1).build(); //47 years old
+        Student notOk_over = new StudentBuilder()
+                .studyRate(TestNumConstants.StudyRate.HALF_TIME)
+                .income(TestNumConstants.IncomeLevel.NO_INCOME)
+                .birthDate(1968, 1, 1).build(); //48 years old
+
+        assertEquals(halfTimeGrant, payimpl.getMonthlyAmount(ok_under.ssn, ok_under.income, ok_under.studyRate, ok_under.completionRatio));
+        assertEquals(halfTimeSubsidyOnly, payimpl.getMonthlyAmount(notOk_border.ssn, notOk_border.income, notOk_border.studyRate, notOk_border.completionRatio));
+        assertEquals(halfTimeSubsidyOnly, payimpl.getMonthlyAmount(notOk_over.ssn, notOk_over.income, notOk_over.studyRate, notOk_over.completionRatio));
+    }
+
+    /**
+     * Evaluates 102+ 103
+     * Subsidies only: age 47-56
+     */
+    @Test
+    public void fullTime_NoIncome_fullCompletion_subsidyOnly() throws IOException
+    {
+        PaymentImpl payimpl = this.getPaymentImplCustomDate(2016, 1, 1);
+        int fullSubsidyOnly = TestNumConstants.StudentSupportType.FULL_TIME_SUBSIDIARY.getAmountPerMonth();
+
+        Student midZone = StudentBuilder.fullTimeStudentNoIncome()
+                .birthDate(1962, 1, 1).build(); //54 years old
+
+        assertEquals(fullSubsidyOnly, payimpl.getMonthlyAmount(midZone.ssn, midZone.income, midZone.studyRate, midZone.completionRatio));
     }
 
     // ---------------------------------------------------------------
