@@ -75,19 +75,17 @@ public class PaymentTest {
     // ---------------------------------------------------------------
 
     /**
-     * Evaluates 101
-     *
+     * Evaluates 101 (full time)
      * @throws IOException
      */
     @Test
-    public void validSubsidy_justTurned20Boundary() throws IOException
+    public void fullTime_noIncome_fullCompletion_noGrantBefore20() throws IOException
     {
         PaymentImpl payimpl = this.getPaymentImplCustomDate(2016, 1, 1);
         int grantedSubsidy =
                 TestNumConstants.StudentSupportType.FULL_TIME_LOAN.getAmountPerMonth() +
                         TestNumConstants.StudentSupportType.FULL_TIME_SUBSIDIARY.getAmountPerMonth();
 
-        //exact birthday is not relevant
         Student tooYoung = new StudentBuilder().birthDate(1997, 1, 1).build();
         Student ok = new StudentBuilder().birthDate(1996, 1, 1).build();
         Student ok_over = new StudentBuilder().birthDate(1995, 1, 1).build();
@@ -103,7 +101,7 @@ public class PaymentTest {
      * Until 56 = <57
      */
     @Test
-    public void noSubsidyAfter56() throws IOException
+    public void fullTime_noIncome_fullCompletion_noGrantAfter56() throws IOException
     {
         PaymentImpl payimpl = this.getPaymentImplCustomDate(2016, 1, 1);
         Student ok_under = StudentBuilder.fullTimeStudentNoIncome()
@@ -132,7 +130,7 @@ public class PaymentTest {
      * From the year 47 = <47
      */
     @Test
-    public void noLoanAfter47() throws IOException
+    public void fullTime_noIncome_fullCompletion_noLoanAfter47() throws IOException
     {
         PaymentImpl payimpl = this.getPaymentImplCustomDate(2016, 1, 1);
 
