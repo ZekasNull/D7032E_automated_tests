@@ -38,7 +38,9 @@ public class TestNumConstants {
     public enum IncomeLevel {
         NO_INCOME(0),
         HALF_TIME_MAXIMUM(128722),
-        FULL_TIME_MAXIMUM (85813);
+        FULL_TIME_MAXIMUM (85813),
+        HALF_TIME_OVER_MAXIMUM(128723),
+        FULL_TIME_OVER_MAXIMUM(85814);
 
         private final int income;
 
@@ -51,7 +53,18 @@ public class TestNumConstants {
         }
     }
 
+    public enum CompletionRatio {
+        FIFTY_PERCENT(50),
+        LESS_THAN_FIFTY(49),
+        MORE_THAN_FIFTY(51);
 
-
+        private final int completionRatio;
+        CompletionRatio(int completionRatio) {
+            this.completionRatio = completionRatio;
+        }
+        public int getCompletionRatio() {
+            return completionRatio;
+        }
+    }
 
 }

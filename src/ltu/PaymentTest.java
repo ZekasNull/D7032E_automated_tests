@@ -2,6 +2,7 @@ package ltu;
 
 import static org.junit.Assert.*;
 
+import org.junit.Assert;
 import org.junit.Test;
 
 import java.io.IOException;
@@ -12,10 +13,10 @@ public class PaymentTest {
         return new PaymentImpl(new CalendarImpl());
     }
 
-    @Test
-    public void testSilly() {
-        assertEquals(1, 1);
-    }
+    int fullGrant = TestNumConstants.StudentSupportType.FULL_TIME_LOAN.getAmountPerMonth() +
+            TestNumConstants.StudentSupportType.FULL_TIME_SUBSIDIARY.getAmountPerMonth();
+    int halfGrant = TestNumConstants.StudentSupportType.PART_TIME_LOAN.getAmountPerMonth() +
+            TestNumConstants.StudentSupportType.PART_TIME_SUBSIDIARY.getAmountPerMonth();
 
 
     // ---------------------------------------------------------------
@@ -110,27 +111,24 @@ public class PaymentTest {
     // ---------------------------------------------------------------
     @Test
     public void atLeastHalfTimeStudies() throws IOException {
-        Student fulltimeRate = new StudentBuilder().studyRate(TestNumConstants.StudyRate.FULL_TIME).build();
-        Student lessthanfulltimeRate = new StudentBuilder().studyRate(TestNumConstants.StudyRate.LESS_THAN_FULL_TIME).build();
-        Student halftimeRate = new StudentBuilder().studyRate(TestNumConstants.StudyRate.HALF_TIME).build();
-        Student lessthanhalftimeRate = new StudentBuilder().studyRate(TestNumConstants.StudyRate.LESS_THAN_HALF_TIME).build();
+        for (int i = 0; i < 50; i++) {
+            Student lessThenHalfTime = new Student("20000101-1234", 0, i, 100);
+            PaymentImpl payimpl = this.getPaymentImplInstanceCurrentDate();
 
+            assertEquals(0, payimpl.getMonthlyAmount(lessThenHalfTime.ssn, lessThenHalfTime.income, lessThenHalfTime.studyRate, lessThenHalfTime.completionRatio));
+        }
+
+        for (int i = 50; i < 100; i++) {
+            Student moreThenHalfTime = new Student("20000101-1234", 0, i, 100);
+            PaymentImpl payimpl = this.getPaymentImplInstanceCurrentDate();
+
+            assertNotSame(0, payimpl.getMonthlyAmount(moreThenHalfTime.ssn, moreThenHalfTime.income, moreThenHalfTime.studyRate, moreThenHalfTime.completionRatio));
+            assertEquals(halfGrant, payimpl.getMonthlyAmount(moreThenHalfTime.ssn, moreThenHalfTime.income, moreThenHalfTime.studyRate, moreThenHalfTime.completionRatio));
+        }
+
+        Student fulltimeRate = new Student("20000101-1234", 0, 100, 100);
         PaymentImpl payimpl = this.getPaymentImplInstanceCurrentDate();
-
-        int fullGrant = TestNumConstants.StudentSupportType.FULL_TIME_LOAN.getAmountPerMonth() +
-                TestNumConstants.StudentSupportType.FULL_TIME_SUBSIDIARY.getAmountPerMonth();
-        int halfGrant = TestNumConstants.StudentSupportType.PART_TIME_LOAN.getAmountPerMonth() +
-                TestNumConstants.StudentSupportType.PART_TIME_SUBSIDIARY.getAmountPerMonth();
-
-        // Full time
         assertEquals(fullGrant, payimpl.getMonthlyAmount(fulltimeRate.ssn, fulltimeRate.income, fulltimeRate.studyRate, fulltimeRate.completionRatio));
-
-        // Less than full time, more than half time
-        assertEquals(halfGrant, payimpl.getMonthlyAmount(lessthanfulltimeRate.ssn, lessthanfulltimeRate.income, lessthanfulltimeRate.studyRate, lessthanfulltimeRate.completionRatio));
-        assertEquals(halfGrant, payimpl.getMonthlyAmount(halftimeRate.ssn, halftimeRate.income, halftimeRate.studyRate, halftimeRate.completionRatio));
-
-        // Below half time
-        assertEquals(0, payimpl.getMonthlyAmount(lessthanhalftimeRate.ssn, lessthanhalftimeRate.income, lessthanhalftimeRate.studyRate, lessthanhalftimeRate.completionRatio));
     }
 
 
@@ -138,12 +136,54 @@ public class PaymentTest {
     // 300-series requirements
     // ---------------------------------------------------------------
 
-    // ---------------------------------------------------------------
-    // 400-series requirements
-    // ---------------------------------------------------------------
+    public void maxIncome() throws IOException {
+        Student maxIncomeFullTime = new StudentBuilder()
+                .studyRate(TestNumConstants.StudyRate.FULL_TIME)
+                .income(TestNumConstants.IncomeLevel.FULL_TIME_MAXIMUM)
+                .build();
+        Student maxIncomeFullTime_over = new StudentBuilder()
+                .studyRate(TestNumConstants.StudyRate.FULL_TIME)
+                .income(TestNumConstants.IncomeLevel.FULL_TIME_OVER_MAXIMUM)
+                .build();
 
-    // ---------------------------------------------------------------
-    // 500-series requirements
-    // ---------------------------------------------------------------
+        Student maxIncomeHalfTime = new StudentBuilder()
+                .studyRate(TestNumConstants.StudyRate.HALF_TIME)
+                .income(TestNumConstants.IncomeLevel.HALF_TIME_MAXIMUM)
+                .build();
+        Student maxIncomeHalfTime_over = new StudentBuilder()
+                .studyRate(TestNumConstants.StudyRate.HALF_TIME)
+                .income(TestNumConstants.IncomeLevel.HALF_TIME_OVER_MAXIMUM)
+                .build();
+        PaymentImpl payimpl = this.getPaymentImplInstanceCurrentDate();
+
+        assertEquals(fullGrant, payimpl.getMonthlyAmount(maxIncomeFullTime.ssn, maxIncomeFullTime.income, maxIncomeFullTime.studyRate, maxIncomeFullTime.completionRatio));
+        assertEquals(0, payimpl.getMonthlyAmount(maxIncomeFullTime_over.ssn, maxIncomeFullTime_over.income, maxIncomeFullTime_over.studyRate, maxIncomeFullTime_over.completionRatio));
+        assertEquals(halfGrant, payimpl.getMonthlyAmount(maxIncomeHalfTime.ssn, maxIncomeHalfTime.income, maxIncomeHalfTime.studyRate, maxIncomeHalfTime.completionRatio));
+        assertEquals(0, payimpl.getMonthlyAmount(maxIncomeHalfTime_over.ssn, maxIncomeHalfTime_over.income, maxIncomeHalfTime_over.studyRate, maxIncomeHalfTime_over.completionRatio));
+    }
+
+
+// ---------------------------------------------------------------
+// 400-series requirements
+// ---------------------------------------------------------------
+    public void fiftyPercentCompletion() throws IOException {
+        for (int i = 0; i < 50; i++) {
+            Student lessThenFiftyPercentComletion = new StudentBuilder().completionRatio(i).build();
+            PaymentImpl payimpl = this.getPaymentImplInstanceCurrentDate();
+
+            assertEquals(0, payimpl.getMonthlyAmount(lessThenFiftyPercentComletion.ssn, lessThenFiftyPercentComletion.income, lessThenFiftyPercentComletion.studyRate, lessThenFiftyPercentComletion.completionRatio));
+        }
+
+        for (int i = 50; i <= 100; i++) {
+            Student lessThenFiftyPercentComletion = new StudentBuilder().completionRatio(i).build();
+            PaymentImpl payimpl = this.getPaymentImplInstanceCurrentDate();
+
+            assertNotSame(0, payimpl.getMonthlyAmount(lessThenFiftyPercentComletion.ssn, lessThenFiftyPercentComletion.income, lessThenFiftyPercentComletion.studyRate, lessThenFiftyPercentComletion.completionRatio));
+        }
+    }
+
+// ---------------------------------------------------------------
+// 500-series requirements
+// ---------------------------------------------------------------
 
 }
