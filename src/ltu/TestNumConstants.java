@@ -19,8 +19,9 @@ public class TestNumConstants {
     }
 
     public enum StudyRate {
-        LESS_THAN_HALF_TIME(0),
+        LESS_THAN_HALF_TIME(49),
         HALF_TIME(50),
+        LESS_THAN_FULL_TIME(99),
         FULL_TIME(100);
 
         private final int subsidiaryPercentage;
