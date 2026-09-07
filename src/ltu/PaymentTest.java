@@ -24,6 +24,51 @@ public class PaymentTest {
             TestNumConstants.StudentSupportType.PART_TIME_SUBSIDIARY.getAmountPerMonth();
 
 
+    // ---------------------------------------------------------------
+    // Input validation
+    // ---------------------------------------------------------------
+
+    @Test(expected = IllegalArgumentException.class)
+    public void invalidPersonId_null() throws IOException
+    {
+        PaymentImpl payimpl = this.getPaymentImplCustomDate(2016, 1, 1);
+        payimpl.getMonthlyAmount(null, 0, 100, 100);
+    }
+
+    @Test(expected = IllegalArgumentException.class)
+    public void invalidIncome_negative() throws IOException
+    {
+        PaymentImpl payimpl = this.getPaymentImplCustomDate(2016, 1, 1);
+        payimpl.getMonthlyAmount("19960101-1234", -1, 100, 100);
+    }
+
+    @Test(expected = IllegalArgumentException.class)
+    public void invalidStudyRate_negative() throws IOException
+    {
+        PaymentImpl payimpl = this.getPaymentImplCustomDate(2016, 1, 1);
+        payimpl.getMonthlyAmount("19960101-1234", 0, -1, 100);
+    }
+
+    @Test(expected = IllegalArgumentException.class)
+    public void invalidCompletionRatio_negative() throws IOException
+    {
+        PaymentImpl payimpl = this.getPaymentImplCustomDate(2016, 1, 1);
+        payimpl.getMonthlyAmount("19960101-1234", 0, 100, -1);
+    }
+
+    @Test(expected = IllegalArgumentException.class)
+    public void invalidPersonId_randomString() throws IOException
+    {
+        PaymentImpl payimpl = this.getPaymentImplCustomDate(2016, 1, 1);
+        payimpl.getMonthlyAmount("wrong", 0, 100, 100);
+    }
+
+    @Test(expected = IllegalArgumentException.class)
+    public void invalidPersonId_malformedFormat() throws IOException
+    {
+        PaymentImpl payimpl = this.getPaymentImplCustomDate(2016, 1, 1);
+        payimpl.getMonthlyAmount("ABCD0101-1234", 0, 100, 100);
+    }
 
     // ---------------------------------------------------------------
     // 100-series requirements
