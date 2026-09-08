@@ -135,7 +135,7 @@ public class PaymentTest {
     // ---------------------------------------------------------------
     // 300-series requirements
     // ---------------------------------------------------------------
-
+    @Test
     public void maxIncome() throws IOException {
         Student maxIncomeFullTime = new StudentBuilder()
                 .studyRate(TestNumConstants.StudyRate.FULL_TIME)
@@ -166,6 +166,7 @@ public class PaymentTest {
 // ---------------------------------------------------------------
 // 400-series requirements
 // ---------------------------------------------------------------
+    @Test
     public void fiftyPercentCompletion() throws IOException {
         for (int i = 0; i < 50; i++) {
             Student lessThenFiftyPercentComletion = new StudentBuilder().completionRatio(i).build();
