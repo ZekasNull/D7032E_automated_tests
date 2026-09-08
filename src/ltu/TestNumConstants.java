@@ -52,19 +52,4 @@ public class TestNumConstants {
             return income;
         }
     }
-
-    public enum CompletionRatio {
-        FIFTY_PERCENT(50),
-        LESS_THAN_FIFTY(49),
-        MORE_THAN_FIFTY(51);
-
-        private final int completionRatio;
-        CompletionRatio(int completionRatio) {
-            this.completionRatio = completionRatio;
-        }
-        public int getCompletionRatio() {
-            return completionRatio;
-        }
-    }
-
 }
