@@ -257,6 +257,24 @@ public class PaymentTest {
         assertEquals(fullSubsidyOnly, payimpl.getMonthlyAmount(midZone.ssn, midZone.income, midZone.studyRate, midZone.completionRatio));
     }
 
+    /**
+     * Evaluates 102 + 103
+     * Halftime version
+     */
+    @Test
+    public void halfTime_noIncome_fullCompletion_subsidyOnly() throws IOException
+    {
+        PaymentImpl payimpl = this.getPaymentImplCustomDate(2016, 1, 1);
+        int halfTimeSubsidyOnly = TestNumConstants.StudentSupportType.PART_TIME_SUBSIDIARY.getAmountPerMonth();
+
+        Student midZone = new StudentBuilder()
+                .studyRate(TestNumConstants.StudyRate.HALF_TIME)
+                .income(TestNumConstants.IncomeLevel.NO_INCOME)
+                .birthDate(1966, 1, 1).build(); //50 years old
+
+        assertEquals(halfTimeSubsidyOnly, payimpl.getMonthlyAmount(midZone.ssn, midZone.income, midZone.studyRate, midZone.completionRatio));
+    }
+
     // ---------------------------------------------------------------
     // 200-series requirements
     // ---------------------------------------------------------------
