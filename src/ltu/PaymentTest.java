@@ -179,7 +179,7 @@ public class PaymentTest {
     }
 
     /**
-     * Evaluates 103
+     * Evaluates 103 (full time)
      * From the year 47 = <47
      */
     @Test
@@ -211,8 +211,8 @@ public class PaymentTest {
     }
 
     /**
-     * Evaluates 103
-     * Half-time study rate at the age-47 boundary
+     * Evaluates 103 (half time)
+     * From the year 47 = <47
      */
     @Test
     public void halfTime_noIncome_fullCompletion_noLoanAfter47() throws IOException
@@ -243,7 +243,7 @@ public class PaymentTest {
 
     /**
      * Evaluates 102+ 103
-     * Subsidies only: age 47-56
+     * Subsidies only: age 47-56 midpoint age
      */
     @Test
     public void fullTime_NoIncome_fullCompletion_subsidyOnly() throws IOException
@@ -259,7 +259,7 @@ public class PaymentTest {
 
     /**
      * Evaluates 102 + 103
-     * Halftime version
+     * Halftime version, midpoint age
      */
     @Test
     public void halfTime_noIncome_fullCompletion_subsidyOnly() throws IOException
@@ -270,7 +270,7 @@ public class PaymentTest {
         Student midZone = new StudentBuilder()
                 .studyRate(TestNumConstants.StudyRate.HALF_TIME)
                 .income(TestNumConstants.IncomeLevel.NO_INCOME)
-                .birthDate(1966, 1, 1).build(); //50 years old
+                .birthDate(1962, 1, 1).build(); //54 years old
 
         assertEquals(halfTimeSubsidyOnly, payimpl.getMonthlyAmount(midZone.ssn, midZone.income, midZone.studyRate, midZone.completionRatio));
     }
