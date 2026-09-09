@@ -92,7 +92,10 @@ public class PaymentTest {
 
 
         assertEquals(0, payimpl.getMonthlyAmount(tooYoung.ssn, tooYoung.income, tooYoung.studyRate, tooYoung.completionRatio));
+
+        //fails by granting loan but not subsidy
         assertEquals(grantedSubsidy, payimpl.getMonthlyAmount(ok.ssn, ok.income, ok.studyRate, ok.completionRatio));
+
         assertEquals(grantedSubsidy, payimpl.getMonthlyAmount(ok_over.ssn, ok_over.income, ok_over.studyRate, ok_over.completionRatio));
     }
 
@@ -117,7 +120,10 @@ public class PaymentTest {
                 .income(TestNumConstants.IncomeLevel.NO_INCOME)
                 .birthDate(1996, 1, 1).build();
 
+
         assertEquals(0, payimpl.getMonthlyAmount(tooYoung.ssn, tooYoung.income, tooYoung.studyRate, tooYoung.completionRatio));
+
+        //expected:<4960> but was:<4564>, half-time grant seems to be the wrong value?
         assertEquals(halfTimeGrant, payimpl.getMonthlyAmount(ok.ssn, ok.income, ok.studyRate, ok.completionRatio));
     }
 
@@ -146,6 +152,7 @@ public class PaymentTest {
                 payimpl.getMonthlyAmount(ok_under.ssn, ok_under.income, ok_under.studyRate, ok_under.completionRatio));
         assertEquals(onlysubsidy,
                 payimpl.getMonthlyAmount(ok_border.ssn, ok_border.income, ok_border.studyRate, ok_border.completionRatio));
+        //fails on age >56 and gets what looks like integer max value
         assertEquals(0,
                 payimpl.getMonthlyAmount(notOk_over.ssn, notOk_over.income, notOk_over.studyRate, notOk_over.completionRatio));
     }
@@ -204,6 +211,7 @@ public class PaymentTest {
 
         assertEquals(fullGrant,
                 payimpl.getMonthlyAmount(ok_under.ssn, ok_under.income, ok_under.studyRate, ok_under.completionRatio));
+        //fails to remove loan when only eligible for subsidy
         assertEquals(onlySubsidy,
                 payimpl.getMonthlyAmount(notOk_border.ssn, notOk_border.income, notOk_border.studyRate, notOk_border.completionRatio));
         assertEquals(onlySubsidy,
@@ -236,8 +244,14 @@ public class PaymentTest {
                 .income(TestNumConstants.IncomeLevel.NO_INCOME)
                 .birthDate(1968, 1, 1).build(); //48 years old
 
+
+        //grant seems to be 1000 kronor too much
         assertEquals(halfTimeGrant, payimpl.getMonthlyAmount(ok_under.ssn, ok_under.income, ok_under.studyRate, ok_under.completionRatio));
+
+        //expected:<1396> but was:<5960>, should only have gotten subsidy but got a loan too and it was 1k too much
+        //two simultaneous failures, incorrect age gate and incorrect grant amount. matches full time version failure
         assertEquals(halfTimeSubsidyOnly, payimpl.getMonthlyAmount(notOk_border.ssn, notOk_border.income, notOk_border.studyRate, notOk_border.completionRatio));
+
         assertEquals(halfTimeSubsidyOnly, payimpl.getMonthlyAmount(notOk_over.ssn, notOk_over.income, notOk_over.studyRate, notOk_over.completionRatio));
     }
 
