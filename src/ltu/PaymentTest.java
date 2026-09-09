@@ -192,5 +192,106 @@ public class PaymentTest {
 // ---------------------------------------------------------------
 // 500-series requirements
 // ---------------------------------------------------------------
+    /**
+     * Evaluates requirements 501 and 502.
+     * Full-time students receive:
+     * Loan = 7088 SEK
+     * Subsidiary = 2816 SEK
+     */
+    @Test
+    public void fullTimePaymentAmount() throws IOException {
+        Student student = StudentBuilder.fullTimeStudentNoIncome().build();
+        PaymentImpl payimpl = this.getPaymentImplInstanceCurrentDate();
 
+        int expected =
+                TestNumConstants.StudentSupportType.FULL_TIME_LOAN.getAmountPerMonth() +
+                TestNumConstants.StudentSupportType.FULL_TIME_SUBSIDIARY.getAmountPerMonth();
+
+        assertEquals(expected,
+                payimpl.getMonthlyAmount(
+                        student.ssn,
+                        student.income,
+                        student.studyRate,
+                        student.completionRatio));
+    }
+
+    /**
+     * Evaluates requirements 503 and 504.
+     * Part-time students receive:
+     * Loan = 3564 SEK
+     * Subsidiary = 1396 SEK
+     */
+    @Test
+    public void partTimePaymentAmount() throws IOException {
+        Student student = new Student("20000101-1234", 0, 50, 100);
+        PaymentImpl payimpl = this.getPaymentImplInstanceCurrentDate();
+
+        int expected =
+                TestNumConstants.StudentSupportType.PART_TIME_LOAN.getAmountPerMonth() +
+                TestNumConstants.StudentSupportType.PART_TIME_SUBSIDIARY.getAmountPerMonth();
+
+        assertEquals(expected,
+                payimpl.getMonthlyAmount(
+                        student.ssn,
+                        student.income,
+                        student.studyRate,
+                        student.completionRatio));
+    }
+
+    /**
+     * Evaluates requirement 505.
+     * A student entitled to a loan receives the full loan amount.
+     */
+    @Test
+    public void fullLoanAmountIsPaid() throws IOException {
+        Student student = StudentBuilder.fullTimeStudentNoIncome().build();
+        PaymentImpl payimpl = this.getPaymentImplInstanceCurrentDate();
+
+        assertEquals(fullGrant,
+                payimpl.getMonthlyAmount(
+                        student.ssn,
+                        student.income,
+                        student.studyRate,
+                        student.completionRatio));
+    }
+
+    /**
+     * Evaluates requirement 506.
+     * Payment is made on the last weekday of the month.
+     */
+    @Test
+    public void paymentDateJanuary2016() throws IOException {
+        PaymentImpl payimpl = this.getPaymentImplCustomDate(2016, 1, 10);
+        assertEquals("20160129", payimpl.getNextPaymentDay());
+    }
+
+    @Test
+    public void paymentDateFebruary2016() throws IOException {
+        PaymentImpl payimpl = this.getPaymentImplCustomDate(2016, 2, 10);
+        assertEquals("20160229", payimpl.getNextPaymentDay());
+    }
+
+    @Test
+    public void paymentDateMarch2016() throws IOException {
+        PaymentImpl payimpl = this.getPaymentImplCustomDate(2016, 3, 10);
+        assertEquals("20160331", payimpl.getNextPaymentDay());
+    }
+
+    @Test
+    public void paymentDateApril2016() throws IOException {
+        PaymentImpl payimpl = this.getPaymentImplCustomDate(2016, 4, 10);
+        assertEquals("20160429", payimpl.getNextPaymentDay());
+    }
+
+    @Test
+    public void paymentDateMay2016() throws IOException {
+        PaymentImpl payimpl = this.getPaymentImplCustomDate(2016, 5, 10);
+        assertEquals("20160531", payimpl.getNextPaymentDay());
+    }
+
+    @Test
+    public void paymentDateJune2016() throws IOException {
+        PaymentImpl payimpl = this.getPaymentImplCustomDate(2016, 6, 10);
+        assertEquals("20160630", payimpl.getNextPaymentDay());
+    }
 }
