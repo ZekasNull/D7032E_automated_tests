@@ -168,7 +168,6 @@ public class PaymentTest {
         assertEquals(0, payimpl.getMonthlyAmount(maxIncomeHalfTime_over.ssn, maxIncomeHalfTime_over.income, maxIncomeHalfTime_over.studyRate, maxIncomeHalfTime_over.completionRatio));
     }
 
-
 // ---------------------------------------------------------------
 // 400-series requirements
 // ---------------------------------------------------------------
@@ -293,5 +292,38 @@ public class PaymentTest {
     public void paymentDateJune2016() throws IOException {
         PaymentImpl payimpl = this.getPaymentImplCustomDate(2016, 6, 10);
         assertEquals("20160630", payimpl.getNextPaymentDay());
+    }
+
+    /**
+     * Exception testing
+     */
+    @Test(expected = IllegalArgumentException.class)
+    public void testNullPersonIdThrowsException() throws IOException {
+        PaymentImpl payimpl = this.getPaymentImplInstanceCurrentDate();
+        payimpl.getMonthlyAmount(null, 0, 100, 100);
+    }
+
+    @Test(expected = IllegalArgumentException.class)
+    public void testInvalidPersonIdLengthThrowsException() throws IOException {
+        PaymentImpl payimpl = this.getPaymentImplInstanceCurrentDate();
+        payimpl.getMonthlyAmount("20000101", 0, 100, 100);
+    }
+
+    @Test(expected = IllegalArgumentException.class)
+    public void testNegativeIncomeThrowsException() throws IOException {
+        PaymentImpl payimpl = this.getPaymentImplInstanceCurrentDate();
+        payimpl.getMonthlyAmount("20000101-1234", -1, 100, 100);
+    }
+
+    @Test(expected = IllegalArgumentException.class)
+    public void testNegativeStudyRateThrowsException() throws IOException {
+        PaymentImpl payimpl = this.getPaymentImplInstanceCurrentDate();
+        payimpl.getMonthlyAmount("20000101-1234", 0, -1, 100);
+    }
+
+    @Test(expected = IllegalArgumentException.class)
+    public void testNegativeCompletionRatioThrowsException() throws IOException {
+        PaymentImpl payimpl = this.getPaymentImplInstanceCurrentDate();
+        payimpl.getMonthlyAmount("20000101-1234", 0, 100, -1);
     }
 }
