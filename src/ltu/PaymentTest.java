@@ -292,6 +292,7 @@ public class PaymentTest {
     // ---------------------------------------------------------------
     // 200-series requirements
     // ---------------------------------------------------------------
+
     @Test
     public void atLeastHalfTimeStudies() throws IOException {
         for (int i = 0; i < 50; i++) {
@@ -369,6 +370,24 @@ public class PaymentTest {
 // ---------------------------------------------------------------
 // 500-series requirements
 // ---------------------------------------------------------------
+    @Test
+    public void halfTime_correctSubsidyAndLoanAmounts() throws IOException
+    {
+        PaymentImpl paymentImpl = this.getPaymentImplInstanceCurrentDate();
+        Student stu = new StudentBuilder()
+                .birthDate(1990, 1, 1)
+                .studyRate(TestNumConstants.StudyRate.HALF_TIME)
+                .build();
+
+        int correctLoan = TestNumConstants.StudentSupportType.PART_TIME_LOAN.getAmountPerMonth();
+        int correctSubsidy = TestNumConstants.StudentSupportType.PART_TIME_SUBSIDIARY.getAmountPerMonth();
+
+        int eval = paymentImpl.getMonthlyAmount(stu.ssn, stu.income, stu.studyRate, stu.completionRatio);
+
+        assertEquals(correctLoan, eval - correctSubsidy);
+        assertEquals(correctSubsidy, eval - correctLoan);
+    }
+
     /**
      * Evaluates requirements 501 and 502.
      * Full-time students receive:
