@@ -256,7 +256,7 @@ public class PaymentTest {
     }
 
     /**
-     * Evaluates 102+ 103
+     * Evaluates 102 + 103
      * Subsidies only: age 47-56 midpoint age
      */
     @Test
@@ -320,32 +320,46 @@ public class PaymentTest {
     // 300-series requirements
     // ---------------------------------------------------------------
     @Test
-    public void maxIncome() throws IOException {
+    public void maxIncome_FullTime() throws IOException {
         Student maxIncomeFullTime = new StudentBuilder()
                 .studyRate(TestNumConstants.StudyRate.FULL_TIME)
                 .income(TestNumConstants.IncomeLevel.FULL_TIME_MAXIMUM)
                 .build();
+        PaymentImpl payimpl = this.getPaymentImplInstanceCurrentDate();
+        assertEquals(fullGrant, payimpl.getMonthlyAmount(maxIncomeFullTime.ssn, maxIncomeFullTime.income, maxIncomeFullTime.studyRate, maxIncomeFullTime.completionRatio));
+    }
+
+    @Test
+    public void maxIncome_FullTime_over() throws IOException {
         Student maxIncomeFullTime_over = new StudentBuilder()
                 .studyRate(TestNumConstants.StudyRate.FULL_TIME)
                 .income(TestNumConstants.IncomeLevel.FULL_TIME_OVER_MAXIMUM)
                 .build();
+        PaymentImpl payimpl = this.getPaymentImplInstanceCurrentDate();
+        assertEquals(0, payimpl.getMonthlyAmount(maxIncomeFullTime_over.ssn, maxIncomeFullTime_over.income, maxIncomeFullTime_over.studyRate, maxIncomeFullTime_over.completionRatio));
+    }
 
+    @Test
+    public void maxIncome_halfTime() throws IOException {
         Student maxIncomeHalfTime = new StudentBuilder()
                 .studyRate(TestNumConstants.StudyRate.HALF_TIME)
                 .income(TestNumConstants.IncomeLevel.HALF_TIME_MAXIMUM)
                 .build();
+        PaymentImpl payimpl = this.getPaymentImplInstanceCurrentDate();
+        // expected:<4960> but was:<5960>
+        assertEquals(halfGrant, payimpl.getMonthlyAmount(maxIncomeHalfTime.ssn, maxIncomeHalfTime.income, maxIncomeHalfTime.studyRate, maxIncomeHalfTime.completionRatio));
+    }
+
+    @Test
+    public void maxIncome_halfTime_over() throws IOException {
         Student maxIncomeHalfTime_over = new StudentBuilder()
                 .studyRate(TestNumConstants.StudyRate.HALF_TIME)
                 .income(TestNumConstants.IncomeLevel.HALF_TIME_OVER_MAXIMUM)
                 .build();
         PaymentImpl payimpl = this.getPaymentImplInstanceCurrentDate();
-
-        assertEquals(fullGrant, payimpl.getMonthlyAmount(maxIncomeFullTime.ssn, maxIncomeFullTime.income, maxIncomeFullTime.studyRate, maxIncomeFullTime.completionRatio));
-        assertEquals(0, payimpl.getMonthlyAmount(maxIncomeFullTime_over.ssn, maxIncomeFullTime_over.income, maxIncomeFullTime_over.studyRate, maxIncomeFullTime_over.completionRatio));
-        assertEquals(halfGrant, payimpl.getMonthlyAmount(maxIncomeHalfTime.ssn, maxIncomeHalfTime.income, maxIncomeHalfTime.studyRate, maxIncomeHalfTime.completionRatio));
+        // expected:<0> but was:<1396>
         assertEquals(0, payimpl.getMonthlyAmount(maxIncomeHalfTime_over.ssn, maxIncomeHalfTime_over.income, maxIncomeHalfTime_over.studyRate, maxIncomeHalfTime_over.completionRatio));
     }
-
 
 // ---------------------------------------------------------------
 // 400-series requirements
