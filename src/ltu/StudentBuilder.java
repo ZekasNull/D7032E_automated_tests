@@ -5,14 +5,14 @@ package ltu;
  * <p>
  * If no parameters are given, the defaults are:
  * <ul>
- *     <li>SSN: SSN for 2000-01-01</li>
+ *     <li>SSN: SSN for 1990-01-01</li>
  *     <li>income: {@link TestNumConstants.IncomeLevel#NO_INCOME}</li>
  *     <li>studyRate: {@link TestNumConstants.StudyRate#FULL_TIME} (%)</li>
  *     <li>completionRatio: 100 (%)</li>
  * </ul>
  */
 public class StudentBuilder {
-    private String personId = createPersonId(2000, 1, 1);
+    private String personId = createPersonId(1990, 1, 1);
     private TestNumConstants.IncomeLevel income = TestNumConstants.IncomeLevel.NO_INCOME;
     private TestNumConstants.StudyRate studyRate = TestNumConstants.StudyRate.FULL_TIME;
     private int completionRatio = 100;
