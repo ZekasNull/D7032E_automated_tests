@@ -112,4 +112,35 @@ public class RequirementTest {
         PaymentImpl payimpl = this.getPaymentImplCustomDate(2016, 2, 10);
         assertEquals("20160229", payimpl.getNextPaymentDay());
     }
+    @Test
+public void requirement_101_fails() throws IOException {
+    PaymentImpl payimpl = new PaymentImpl(new CalendarImpl(2016, 1, 15));
+
+    Student age19 = StudentBuilder.fullTimeStudentNoIncome()
+            .birthDate(1997, 1, 1)
+            .build();
+
+    Student age20 = StudentBuilder.fullTimeStudentNoIncome()
+            .birthDate(1996, 1, 1)
+            .build();
+
+    Student age21 = StudentBuilder.fullTimeStudentNoIncome()
+            .birthDate(1995, 1, 1)
+            .build();
+
+    int amount19 = payimpl.getMonthlyAmount(
+            age19.ssn, age19.income, age19.studyRate, age19.completionRatio);
+
+    int amount20 = payimpl.getMonthlyAmount(
+            age20.ssn, age20.income, age20.studyRate, age20.completionRatio);
+
+    int amount21 = payimpl.getMonthlyAmount(
+            age21.ssn, age21.income, age21.studyRate, age21.completionRatio);
+
+    // Under 20 should receive nothing
+    assertEquals(0, amount19);
+
+    // A 20-year-old should receive the same entitlement as a 21-year-old
+    assertEquals(amount21, amount20);
+    }
 }
