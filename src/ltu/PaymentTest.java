@@ -292,29 +292,31 @@ public class PaymentTest {
     // ---------------------------------------------------------------
     // 200-series requirements
     // ---------------------------------------------------------------
-
     @Test
     public void atLeastHalfTimeStudies() throws IOException {
         for (int i = 0; i < 50; i++) {
             Student lessThenHalfTime = new Student("20000101-1234", 0, i, 100);
             PaymentImpl payimpl = this.getPaymentImplInstanceCurrentDate();
-
             assertEquals(0, payimpl.getMonthlyAmount(lessThenHalfTime.ssn, lessThenHalfTime.income, lessThenHalfTime.studyRate, lessThenHalfTime.completionRatio));
         }
+    }
 
+    @Test
+    public void atLeastHalfTimeStudies_over() throws IOException {
         for (int i = 50; i < 100; i++) {
             Student moreThenHalfTime = new Student("20000101-1234", 0, i, 100);
             PaymentImpl payimpl = this.getPaymentImplInstanceCurrentDate();
-
-            assertNotSame(0, payimpl.getMonthlyAmount(moreThenHalfTime.ssn, moreThenHalfTime.income, moreThenHalfTime.studyRate, moreThenHalfTime.completionRatio));
+            // expected:<4960> but was:<5960>
             assertEquals(halfGrant, payimpl.getMonthlyAmount(moreThenHalfTime.ssn, moreThenHalfTime.income, moreThenHalfTime.studyRate, moreThenHalfTime.completionRatio));
         }
+    }
 
+    @Test
+    public void fullTimeStudies() throws IOException {
         Student fulltimeRate = new Student("20000101-1234", 0, 100, 100);
         PaymentImpl payimpl = this.getPaymentImplInstanceCurrentDate();
         assertEquals(fullGrant, payimpl.getMonthlyAmount(fulltimeRate.ssn, fulltimeRate.income, fulltimeRate.studyRate, fulltimeRate.completionRatio));
     }
-
 
     // ---------------------------------------------------------------
     // 300-series requirements
